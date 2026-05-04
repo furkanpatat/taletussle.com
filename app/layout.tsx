@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Baloo_2, Nunito } from 'next/font/google'
 import './globals.css'
+import { LanguageProvider } from '../lib/i18n'
 
 /**
  * Font seçimi notları:
@@ -53,7 +54,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr" className={`${baloo.variable} ${nunito.variable}`}>
-      <body className="font-nunito bg-[#fff9f0]">{children}</body>
+      <body className="font-nunito bg-[#fff9f0]">
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   )
 }

@@ -3,6 +3,8 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft } from 'lucide-react'
+import { useLang } from '../lib/i18n'
+import LanguageToggle from './LanguageToggle'
 
 /**
  * Privacy Policy ve Terms sayfaları için ortak şablon.
@@ -22,6 +24,7 @@ export default function LegalLayout({
   intro?: string
   sections: LegalSection[]
 }) {
+  const { t } = useLang()
   return (
     <div className="min-h-screen bg-[#FFFBF5] text-[#1a1a2e] font-sans">
       {/* Top bar */}
@@ -32,11 +35,14 @@ export default function LegalLayout({
             <Image src="/logo.svg" alt="TaleTussle" width={32} height={32} className="object-contain" />
             <span className="font-extrabold text-[#1a1a2e]">TaleTussle</span>
           </Link>
-          <nav className="hidden sm:flex gap-5 text-sm font-bold text-slate-600">
-            <Link href="/privacy" className="hover:text-[#FF6B6B]">Gizlilik</Link>
-            <Link href="/terms" className="hover:text-[#FF6B6B]">Koşullar</Link>
-            <Link href="/" className="hover:text-[#FF6B6B]">Ana Sayfa</Link>
-          </nav>
+          <div className="flex items-center gap-4">
+            <nav className="hidden sm:flex gap-5 text-sm font-bold text-slate-600">
+              <Link href="/privacy" className="hover:text-[#FF6B6B]">{t.legal.privacy}</Link>
+              <Link href="/terms" className="hover:text-[#FF6B6B]">{t.legal.terms}</Link>
+              <Link href="/" className="hover:text-[#FF6B6B]">{t.legal.back}</Link>
+            </nav>
+            <LanguageToggle />
+          </div>
         </div>
       </header>
 
@@ -62,7 +68,7 @@ export default function LegalLayout({
         <hr className="my-12 border-slate-200" />
 
         <p className="text-sm text-slate-500 font-medium">
-          Sorularınız için:{' '}
+          {t.legal.questionsFor}{' '}
           <a href="mailto:info@taletussle.com" className="text-[#FF6B6B] underline">
             info@taletussle.com
           </a>

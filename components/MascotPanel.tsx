@@ -3,16 +3,16 @@ import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ArrowRight, Sparkles } from 'lucide-react'
 import { Mascot } from '../constants/MascotData'
+import { useLang, mascotI18n } from '../lib/i18n'
 
-const traits = [
-  { emoji: '💖', title: 'Empati Ustası',  desc: 'Anlayışlı ve yardımsever.' },
-  { emoji: '⚡', title: 'Süper Cesur',    desc: 'Hiçbir macerada pes etmez.' },
-  { emoji: '🛡️', title: 'Güvenilir',     desc: 'İyiyi her zaman savunur.' },
-  { emoji: '🏆', title: 'Şampiyon',       desc: 'Binlerce masalda zafer.' },
-]
+const TRAIT_EMOJIS = ['💖', '⚡', '🛡️', '🏆']
 
 export default function MascotPanel({ mascot, onClose }: { mascot: Mascot | null; onClose: () => void }) {
+  const { t, lang } = useLang()
   if (!mascot) return null
+
+  const localized = mascotI18n[mascot.id]?.[lang] ?? { name: mascot.name, trait: mascot.trait, description: mascot.description }
+  const traits = t.panel.traits.map((tr, i) => ({ ...tr, emoji: TRAIT_EMOJIS[i] }))
 
   return (
     <AnimatePresence>
@@ -45,7 +45,7 @@ export default function MascotPanel({ mascot, onClose }: { mascot: Mascot | null
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
             src={mascot.imageUrl}
-            alt={mascot.name}
+            alt={localized.name}
             className="relative z-10 w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
           />
 
@@ -57,7 +57,7 @@ export default function MascotPanel({ mascot, onClose }: { mascot: Mascot | null
           {/* Trait badge bottom-left */}
           <div className="absolute bottom-6 left-6 hidden md:block z-20">
             <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-white/40 backdrop-blur-md text-slate-800 border border-white/60 shadow-sm`}>
-              {mascot.trait}
+              {localized.trait}
             </span>
           </div>
 
@@ -95,20 +95,20 @@ export default function MascotPanel({ mascot, onClose }: { mascot: Mascot | null
             {/* Name & trait */}
             <div>
               <span className={`inline-block px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${mascot.color} border mb-4`}>
-                {mascot.trait}
+                {localized.trait}
               </span>
               <h2 className="font-extrabold text-4xl md:text-5xl text-[#1a1a2e] leading-tight mb-3">
-                {mascot.name}<br />
+                {localized.name}<br />
                 <span className="text-2xl md:text-3xl">{mascot.emoji}</span>
               </h2>
               <p className="text-slate-500 text-base md:text-lg leading-relaxed font-medium">
-                {mascot.description}
+                {localized.description}
               </p>
             </div>
 
             {/* Trait cards */}
             <div className="grid grid-cols-2 gap-3">
-              {traits.map((t, i) => (
+              {traits.map((tr, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 12 }}
@@ -117,9 +117,9 @@ export default function MascotPanel({ mascot, onClose }: { mascot: Mascot | null
                   whileHover={{ y: -3 }}
                   className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm"
                 >
-                  <div className="text-2xl mb-2">{t.emoji}</div>
-                  <p className="font-bold text-[#1a1a2e] text-sm mb-0.5">{t.title}</p>
-                  <p className="text-slate-400 text-xs">{t.desc}</p>
+                  <div className="text-2xl mb-2">{tr.emoji}</div>
+                  <p className="font-bold text-[#1a1a2e] text-sm mb-0.5">{tr.title}</p>
+                  <p className="text-slate-400 text-xs">{tr.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -135,16 +135,16 @@ export default function MascotPanel({ mascot, onClose }: { mascot: Mascot | null
               <div className="p-8">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles size={18} className="text-white/80" />
-                  <p className="text-white/80 font-bold text-sm uppercase tracking-widest">Macera Seni Bekliyor</p>
+                  <p className="text-white/80 font-bold text-sm uppercase tracking-widest">{t.panel.adventureWaiting}</p>
                 </div>
                 <h3 className="font-extrabold text-2xl md:text-3xl text-white mb-2">
-                  {mascot.name} ile Başla! 🎉
+                  {localized.name} {t.panel.startWith}
                 </h3>
                 <p className="text-white/70 font-medium text-sm mb-6">
-                  Kendi masalının kahramanı ol, her gece yeni bir dünya keşfet.
+                  {t.panel.startDesc}
                 </p>
                 <button className="flex items-center gap-2 bg-white text-[#FF6B6B] font-black text-lg px-8 py-4 rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all">
-                  Hemen Dene <ArrowRight size={18} />
+                  {t.panel.tryNow} <ArrowRight size={18} />
                 </button>
               </div>
             </motion.div>

@@ -6,6 +6,8 @@ import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { Mascot, MASCOTS } from '../constants/MascotData'
 import MascotPanel from '../components/MascotPanel'
+import LanguageToggle from '../components/LanguageToggle'
+import { useLang, mascotI18n } from '../lib/i18n'
 
 /**
  * Inline SVG icon'lar — lucide-react 1.x sürümünde Instagram/Heart/Lock/Mail/
@@ -43,18 +45,7 @@ const MailIcon = ({ size = 20, className = '' }: { size?: number; className?: st
   </svg>
 )
 
-/* ──────────────────────────────────────────────────────────────────────
-   Tasarım notları:
-   - Brand renkleri: #FF6B6B (coral), #FFD93D (sun), #6BCB77 (leaf),
-     #4D96FF (sky), #C77DFF (lilac), #FF9A3C (apricot). Deep ink #1a1a2e.
-   - Çocuk ekseninde sıcak, ebeveyn ekseninde güven veren ton.
-   - Uydurma istatistik / fake testimonial YOK; KVKK/COPPA/GDPR vurgulu.
-   - Tüm CTA'lar gerçek hedefe gider:
-       App Store / Play Store badge'leri (yayın olunca link'ler aktif)
-       /privacy ve /terms in-app metnin tam mirror'u
-   ────────────────────────────────────────────────────────────────────── */
-
-/* ── Confetti dots — sade, opsiyonel ── */
+/* ── Confetti dots ── */
 type Dot = { id: number; x: number; y: number; color: string; size: number; dur: number; delay: number }
 
 const buildDots = (): Dot[] =>
@@ -69,8 +60,6 @@ const buildDots = (): Dot[] =>
   }))
 
 const Confetti = () => {
-  // SSR'da deterministik olmayan Math.random() var — mount sonrası doldur.
-  // Lint kuralı (set-state-in-effect) yanlış pozitif: tek seferlik client-only init.
   const [dots, setDots] = useState<Dot[]>([])
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setDots(buildDots()) }, [])
@@ -89,7 +78,6 @@ const Confetti = () => {
   )
 }
 
-/* ── Top scroll progress ── */
 const ProgressBar = () => {
   const { scrollYProgress } = useScroll()
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
@@ -101,7 +89,6 @@ const ProgressBar = () => {
   )
 }
 
-/* ── Wave divider ── */
 const Wave = ({ fill = '#ffffff', flip = false }: { fill?: string; flip?: boolean }) => (
   <div className={`absolute w-full left-0 ${flip ? 'top-0 rotate-180 -translate-y-[1px]' : 'bottom-0 translate-y-[1px]'}`}>
     <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full h-12 md:h-20">
@@ -110,35 +97,31 @@ const Wave = ({ fill = '#ffffff', flip = false }: { fill?: string; flip?: boolea
   </div>
 )
 
-/* ── App Store / Google Play badges ──
-   Notlar:
-   - Yayın olunca href güncellenir; şu an placeholder olarak in-app sayfaya
-     yönlendiren bilgi ile sınırlı. "Yakında" mesajı ile dürüst kalıyoruz. */
+/* ── App Store / Google Play badges ── */
 const StoreBadges = ({ size = 'md' }: { size?: 'md' | 'lg' }) => {
+  const { t } = useLang()
   const ICON = size === 'lg' ? 'h-14 md:h-16' : 'h-12'
   const PAD = size === 'lg' ? 'px-7 py-3.5' : 'px-5 py-2.5'
 
   return (
     <div className="flex flex-col sm:flex-row gap-3 items-center">
-      {/* App Store */}
       <a
         href="#yakinda"
-        aria-label="App Store'da yakında"
+        aria-label={t.store.appStoreAria}
         className={`group inline-flex items-center gap-3 bg-black text-white rounded-2xl ${PAD} shadow-lg hover:bg-zinc-800 transition-colors`}
       >
         <svg className={ICON} viewBox="0 0 384 512" fill="currentColor" aria-hidden="true">
           <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zM256.3 99.5c30.1-35.8 27.4-68.4 26.5-80.1-26.6 1.5-57.4 18.1-74.9 38.5-19.3 21.9-30.6 49-28.2 79.5 28.8 2.2 55.1-12.6 76.6-37.9z"/>
         </svg>
         <div className="text-left leading-tight">
-          <div className="text-[10px] font-medium opacity-70">Yakında</div>
+          <div className="text-[10px] font-medium opacity-70">{t.store.comingSoon}</div>
           <div className="text-base font-bold">App Store</div>
         </div>
       </a>
 
-      {/* Google Play */}
       <a
         href="#yakinda"
-        aria-label="Google Play'de yakında"
+        aria-label={t.store.googlePlayAria}
         className={`group inline-flex items-center gap-3 bg-black text-white rounded-2xl ${PAD} shadow-lg hover:bg-zinc-800 transition-colors`}
       >
         <svg className={ICON} viewBox="0 0 512 512" aria-hidden="true">
@@ -148,7 +131,7 @@ const StoreBadges = ({ size = 'md' }: { size?: 'md' | 'lg' }) => {
           <path fill="#4285F4" d="M77 45l244 211-86 74L77 467V45z" opacity=".75"/>
         </svg>
         <div className="text-left leading-tight">
-          <div className="text-[10px] font-medium opacity-70">Yakında</div>
+          <div className="text-[10px] font-medium opacity-70">{t.store.comingSoon}</div>
           <div className="text-base font-bold">Google Play</div>
         </div>
       </a>
@@ -158,12 +141,21 @@ const StoreBadges = ({ size = 'md' }: { size?: 'md' | 'lg' }) => {
 
 /* ── Nav ── */
 const Nav = () => {
+  const { t } = useLang()
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 30)
     window.addEventListener('scroll', fn)
     return () => window.removeEventListener('scroll', fn)
   }, [])
+
+  const navLinks: [string, string][] = [
+    [t.nav.features, '#ozellikler'],
+    [t.nav.characters, '#karakterler'],
+    [t.nav.parents, '#ebeveyn'],
+    [t.nav.faq, '#sss'],
+  ]
+
   return (
     <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'py-3' : 'py-6'}`}>
       <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -179,18 +171,14 @@ const Nav = () => {
             <span className="text-xl font-extrabold text-[#1a1a2e] tracking-tight">TaleTussle</span>
           </Link>
           <div className="hidden md:flex items-center gap-7">
-            {[
-              ['✨ Özellikler', '#ozellikler'],
-              ['🎭 Karakterler', '#karakterler'],
-              ['🛡️ Ebeveyn', '#ebeveyn'],
-              ['❓ SSS', '#sss'],
-            ].map(([l, h]) => (
+            {navLinks.map(([l, h]) => (
               <Link key={h} href={h} className="text-slate-700 hover:text-[#FF6B6B] font-bold transition-colors">
                 {l}
               </Link>
             ))}
           </div>
           <div className="flex items-center gap-2">
+            <LanguageToggle />
             <a
               href="https://instagram.com/taletussle"
               target="_blank"
@@ -204,7 +192,7 @@ const Nav = () => {
               href="#indir"
               className="bg-gradient-to-r from-[#FF6B6B] to-[#FF9A3C] text-white font-bold py-2.5 px-5 md:px-6 rounded-full shadow-[0_4px_0_#c94c4c] active:shadow-[0_0px_0_#c94c4c] active:translate-y-[4px] transition-all whitespace-nowrap"
             >
-              İndir 🚀
+              {t.nav.download}
             </a>
           </div>
         </motion.div>
@@ -215,11 +203,11 @@ const Nav = () => {
 
 /* ── Hero ── */
 const Hero = () => {
+  const { t, lang } = useLang()
   const { scrollY } = useScroll()
   const y = useTransform(scrollY, [0, 500], [0, 120])
   const floaters = ['🎈', '🌸', '⭐', '✨', '🦋', '🌈', '🎉', '🌟']
 
-  // Hero showcase: real mascot images (Cloudinary), 3 öne çıkan
   const featured = [
     MASCOTS.find((m) => m.id === 'GIRL')!,
     MASCOTS.find((m) => m.id === 'BOY')!,
@@ -242,12 +230,11 @@ const Hero = () => {
 
       <motion.div style={{ y }} className="relative z-10 w-full max-w-7xl mx-auto px-6">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-          {/* LEFT — copy + CTA */}
           <div className="flex-1 text-center lg:text-left max-w-2xl">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <div className="inline-flex items-center gap-2 bg-[#FFD93D]/20 text-amber-700 border-2 border-[#FFD93D] font-bold px-4 py-2 rounded-full mb-7">
                 <Sparkles size={16} className="text-[#FF9A3C]" />
-                Yapay Zekâ ile Çocuğa Özel Masallar
+                {t.hero.badge}
               </div>
             </motion.div>
 
@@ -257,9 +244,9 @@ const Hero = () => {
               transition={{ delay: 0.15, duration: 0.7, type: 'spring' }}
               className="font-extrabold text-[#1a1a2e] leading-[1.05] mb-6 text-5xl md:text-6xl lg:text-7xl tracking-tight"
             >
-              Onun adıyla, <br />
+              {t.hero.title1} <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B6B] via-[#C77DFF] to-[#4D96FF] italic">
-                onun masalıyla
+                {t.hero.title2}
               </span>
               <span className="ml-3">🪄</span>
             </motion.h1>
@@ -270,9 +257,9 @@ const Hero = () => {
               transition={{ delay: 0.3 }}
               className="text-lg md:text-xl text-slate-600 font-medium mb-9 leading-relaxed"
             >
-              Bir isim yaz, bir tema seç — yapay zekâ saniyeler içinde{' '}
-              <strong className="text-[#FF6B6B]">sesli ve görsel</strong> bir masal yazar.
-              Her gece, çocuğun adıyla başlayan yeni bir macera. Reklamsız, güvenli, %100 Türkçe.
+              {t.hero.desc1}{' '}
+              <strong className="text-[#FF6B6B]">{t.hero.descBold}</strong>
+              {t.hero.desc2}
             </motion.p>
 
             <motion.div
@@ -293,22 +280,21 @@ const Hero = () => {
             >
               <span className="inline-flex items-center gap-1.5">
                 <ShieldIcon size={16} className="text-emerald-600" />
-                Reklamsız
+                {t.hero.adFree}
               </span>
               <span className="text-slate-300">•</span>
               <span className="inline-flex items-center gap-1.5">
                 <LockIcon size={16} className="text-blue-600" />
-                KVKK / COPPA / GDPR uyumlu
+                {t.hero.compliant}
               </span>
               <span className="text-slate-300">•</span>
               <span className="inline-flex items-center gap-1.5">
                 <HeartIcon size={16} className="text-rose-500" />
-                Aile dostu
+                {t.hero.familyFriendly}
               </span>
             </motion.div>
           </div>
 
-          {/* RIGHT — mascot showcase */}
           <motion.div
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -316,30 +302,31 @@ const Hero = () => {
             className="flex-shrink-0 relative w-full max-w-md"
           >
             <div className="relative">
-              {/* Glow blobs */}
               <div className="absolute -top-10 -left-10 w-72 h-72 bg-[#FFD93D]/40 blur-3xl rounded-full" />
               <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-[#C77DFF]/30 blur-3xl rounded-full" />
 
-              {/* Mascot stack */}
               <div className="relative grid grid-cols-3 gap-3">
-                {featured.map((m, i) => (
-                  <motion.div
-                    key={m.id}
-                    animate={{ y: [0, i === 1 ? -14 : 14, 0] }}
-                    transition={{ duration: 3 + i, repeat: Infinity, ease: 'easeInOut' }}
-                    className={`relative aspect-[3/4] rounded-3xl overflow-hidden shadow-xl border-4 border-white ${i === 1 ? 'mt-10' : ''}`}
-                  >
-                    <Image src={m.imageUrl} alt={m.name} fill sizes="(min-width:1024px) 200px, 33vw" className="object-cover object-top" priority={i < 2} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                    <div className="absolute bottom-2 left-0 right-0 text-center">
-                      <span className="text-white font-extrabold text-sm drop-shadow">{m.name}</span>
-                    </div>
-                  </motion.div>
-                ))}
+                {featured.map((m, i) => {
+                  const localized = mascotI18n[m.id]?.[lang] ?? { name: m.name }
+                  return (
+                    <motion.div
+                      key={m.id}
+                      animate={{ y: [0, i === 1 ? -14 : 14, 0] }}
+                      transition={{ duration: 3 + i, repeat: Infinity, ease: 'easeInOut' }}
+                      className={`relative aspect-[3/4] rounded-3xl overflow-hidden shadow-xl border-4 border-white ${i === 1 ? 'mt-10' : ''}`}
+                    >
+                      <Image src={m.imageUrl} alt={localized.name} fill sizes="(min-width:1024px) 200px, 33vw" className="object-cover object-top" priority={i < 2} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                      <div className="absolute bottom-2 left-0 right-0 text-center">
+                        <span className="text-white font-extrabold text-sm drop-shadow">{localized.name}</span>
+                      </div>
+                    </motion.div>
+                  )
+                })}
               </div>
 
               <p className="text-center mt-6 font-bold text-[#FF6B6B] text-lg">
-                8 farklı kahraman, sayısız hikâye 🌈
+                {t.hero.mascotCaption}
               </p>
             </div>
           </motion.div>
@@ -351,43 +338,25 @@ const Hero = () => {
   )
 }
 
-/* ── How it works (3 steps) ── */
+/* ── How it works ── */
 const HowItWorks = () => {
+  const { t } = useLang()
   const steps = [
-    {
-      n: '1',
-      emoji: '👤',
-      title: 'Profil Oluştur',
-      desc: 'Çocuğun adı, yaşı ve maskotunu seç. Premium istersen sınırsız masal aç.',
-      color: 'from-[#FF6B6B] to-[#FF9A3C]',
-    },
-    {
-      n: '2',
-      emoji: '🪄',
-      title: 'Tema Seç',
-      desc: 'Uzay, orman, sualtı, şato veya sürpriz. Korku konusu ekle, mod seç (komik / uyku / aksiyon).',
-      color: 'from-[#FFD93D] to-[#FF9A3C]',
-    },
-    {
-      n: '3',
-      emoji: '✨',
-      title: 'Masalın Hazır',
-      desc: 'Yapay zekâ saniyeler içinde hikâyeyi yazar, sesli okur ve sayfa sayfa görselleştirir.',
-      color: 'from-[#C77DFF] to-[#4D96FF]',
-    },
+    { n: '1', emoji: '👤', title: t.how.s1Title, desc: t.how.s1Desc, color: 'from-[#FF6B6B] to-[#FF9A3C]' },
+    { n: '2', emoji: '🪄', title: t.how.s2Title, desc: t.how.s2Desc, color: 'from-[#FFD93D] to-[#FF9A3C]' },
+    { n: '3', emoji: '✨', title: t.how.s3Title, desc: t.how.s3Desc, color: 'from-[#C77DFF] to-[#4D96FF]' },
   ]
   return (
     <section className="bg-white py-24 relative">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
           <div className="inline-flex bg-amber-100 text-amber-700 border-2 border-amber-300 font-bold px-4 py-2 rounded-full mb-5">
-            🚀 Nasıl Çalışır?
+            {t.how.badge}
           </div>
-          <h2 className="font-extrabold text-[#1a1a2e] text-4xl md:text-5xl">3 Adımda Sihirli Bir Gece</h2>
+          <h2 className="font-extrabold text-[#1a1a2e] text-4xl md:text-5xl">{t.how.title}</h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 relative">
-          {/* Connector line (desktop) */}
           <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-1 bg-gradient-to-r from-[#FF6B6B] via-[#FFD93D] to-[#C77DFF] rounded-full opacity-30" />
 
           {steps.map((s, i) => (
@@ -399,13 +368,11 @@ const HowItWorks = () => {
               transition={{ delay: i * 0.12, type: 'spring' }}
               className="relative bg-white rounded-3xl p-7 text-center border-2 border-slate-100"
             >
-              <div
-                className={`w-24 h-24 mx-auto rounded-full bg-gradient-to-br ${s.color} flex items-center justify-center text-5xl shadow-lg mb-5`}
-              >
+              <div className={`w-24 h-24 mx-auto rounded-full bg-gradient-to-br ${s.color} flex items-center justify-center text-5xl shadow-lg mb-5`}>
                 {s.emoji}
               </div>
               <div className="inline-block bg-slate-100 text-slate-500 text-xs font-bold px-3 py-1 rounded-full mb-3">
-                Adım {s.n}
+                {t.how.step} {s.n}
               </div>
               <h3 className="font-extrabold text-xl text-[#1a1a2e] mb-2">{s.title}</h3>
               <p className="text-slate-600 font-medium leading-relaxed">{s.desc}</p>
@@ -417,86 +384,30 @@ const HowItWorks = () => {
   )
 }
 
-/* ── Real Features (matches the actual app) ── */
+/* ── Features ── */
 const Features = () => {
-  const list = [
-    {
-      emoji: '🪄',
-      title: 'Yapay Zekâ Masallar',
-      desc:
-        'Çocuğun adı, yaşı ve favorileriyle özelleştirilmiş hikâyeler. Her masal sayfa sayfa illüstrasyonlu ve profesyonel sesli okuma ile.',
-      bg: 'bg-orange-100',
-      text: 'text-orange-600',
-    },
-    {
-      emoji: '🧠',
-      title: 'Eğitici Mini Oyunlar',
-      desc:
-        'Matematik, bilim, kelime, görsel hafıza, ritim ve bilmece — yaş grubuna göre seviyelendirilmiş, ödüllü oyun seçenekleri.',
-      bg: 'bg-blue-100',
-      text: 'text-blue-600',
-    },
-    {
-      emoji: '🎯',
-      title: 'Günlük Etkinlik Günleri',
-      desc:
-        'Her gün yeni bir tema, yeni bir yarışma. Çocuk skorboardda yer alır, ödüller kazanır ve günlük serisini korur.',
-      bg: 'bg-rose-100',
-      text: 'text-rose-600',
-    },
-    {
-      emoji: '✨',
-      title: 'Topluluk Masalları',
-      desc:
-        'Editörler tarafından özenle seçilmiş masallar feed\'i. Her masal hassas içerik filtresinden geçer.',
-      bg: 'bg-purple-100',
-      text: 'text-purple-600',
-    },
-    {
-      emoji: '👑',
-      title: 'Ünvan, Rozet ve Lig',
-      desc:
-        'XP, seviye, başarımlar, haftalık liderlik tabloları ve ünvanlar — çocuk hem öğrenir hem motive olur.',
-      bg: 'bg-amber-100',
-      text: 'text-amber-600',
-    },
-    {
-      emoji: '🎭',
-      title: 'Karakter Kişiselleştirme',
-      desc:
-        '8 maskot karakter, sihirli gardırop ve yıldız mağazasından kostüm ve karakter aksesuarı.',
-      bg: 'bg-indigo-100',
-      text: 'text-indigo-600',
-    },
-    {
-      emoji: '📊',
-      title: 'Ebeveyn Paneli',
-      desc:
-        'Çocuk gelişim raporu, okuma süresi, favori temalar, kelime dağarcığı istatistikleri ve tüm bildirim tercihleri.',
-      bg: 'bg-emerald-100',
-      text: 'text-emerald-600',
-    },
-    {
-      emoji: '🇹🇷',
-      title: 'Tamamen Türkçe',
-      desc:
-        'Pedagojik bakışla yazılmış, yaş grubuna duyarlı, kültürümüze uygun içerikler. Korku konuları opt-in.',
-      bg: 'bg-teal-100',
-      text: 'text-teal-600',
-    },
+  const { t } = useLang()
+  const styles = [
+    { emoji: '🪄', bg: 'bg-orange-100', text: 'text-orange-600' },
+    { emoji: '🧠', bg: 'bg-blue-100', text: 'text-blue-600' },
+    { emoji: '🎯', bg: 'bg-rose-100', text: 'text-rose-600' },
+    { emoji: '✨', bg: 'bg-purple-100', text: 'text-purple-600' },
+    { emoji: '👑', bg: 'bg-amber-100', text: 'text-amber-600' },
+    { emoji: '🎭', bg: 'bg-indigo-100', text: 'text-indigo-600' },
+    { emoji: '📊', bg: 'bg-emerald-100', text: 'text-emerald-600' },
+    { emoji: '🇹🇷', bg: 'bg-teal-100', text: 'text-teal-600' },
   ]
+  const list = t.features.list.map((entry, i) => ({ ...entry, ...styles[i] }))
+
   return (
     <section id="ozellikler" className="bg-gradient-to-b from-white to-[#F9F5FF] py-32 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <div className="inline-flex bg-green-100 text-green-700 border-2 border-green-300 font-bold px-4 py-2 rounded-full mb-5">
-            🏆 TaleTussle Ne Sunuyor?
+            {t.features.badge}
           </div>
-          <h2 className="font-extrabold text-[#1a1a2e] text-4xl md:text-5xl mb-3">Bir Masaldan Daha Fazlası</h2>
-          <p className="text-slate-500 text-lg font-medium max-w-2xl mx-auto">
-            Hayal gücünü besleyen masallar, beyni geliştiren oyunlar ve aileyi içine alan günlük etkinlikler — tek bir
-            uygulamada.
-          </p>
+          <h2 className="font-extrabold text-[#1a1a2e] text-4xl md:text-5xl mb-3">{t.features.title}</h2>
+          <p className="text-slate-500 text-lg font-medium max-w-2xl mx-auto">{t.features.subtitle}</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {list.map((f, i) => (
@@ -528,34 +439,35 @@ type DisplayGroup =
   | { type: 'pair'; mascot1: Mascot; mascot2: Mascot; label: string; index: number }
 
 const Characters = ({ onSelect }: { onSelect: (m: Mascot) => void }) => {
+  const { t, lang } = useLang()
   const byId = (id: string) => MASCOTS.find((m) => m.id === id)!
   const groups: DisplayGroup[] = [
     { type: 'single', mascot: byId('BOY'), index: 0 },
     { type: 'single', mascot: byId('GIRL'), index: 1 },
     { type: 'single', mascot: byId('PRINCESS'), index: 2 },
     { type: 'single', mascot: byId('KNIGHT'), index: 3 },
-    { type: 'pair', mascot1: byId('SCIENTIST'), mascot2: byId('SCIENTIST_GIRL'), label: '🧪 Bilim Dünyası', index: 4 },
-    { type: 'pair', mascot1: byId('ASTRONAUT'), mascot2: byId('ASTRONAUT_GIRL'), label: '🚀 Uzay Ekibi', index: 5 },
+    { type: 'pair', mascot1: byId('SCIENTIST'), mascot2: byId('SCIENTIST_GIRL'), label: t.characters.labelScience, index: 4 },
+    { type: 'pair', mascot1: byId('ASTRONAUT'), mascot2: byId('ASTRONAUT_GIRL'), label: t.characters.labelSpace, index: 5 },
   ]
+
+  const localized = (m: Mascot) => mascotI18n[m.id]?.[lang] ?? { name: m.name, trait: m.trait, description: '' }
 
   return (
     <section id="karakterler" className="bg-[#F9F5FF] py-32 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <div className="inline-flex bg-purple-100 text-purple-700 border-2 border-purple-300 font-bold px-4 py-2 rounded-full mb-5">
-            🎭 Maskotlar
+            {t.characters.badge}
           </div>
-          <h2 className="font-extrabold text-[#1a1a2e] text-4xl md:text-5xl">Çocuğun Profil Maskotu</h2>
-          <p className="text-slate-500 text-lg font-medium mt-5 max-w-2xl mx-auto">
-            8 sevimli maskottan birini seç — uygulama içi rehber karakter ve profil fotoğrafı olarak çocuğuna eşlik
-            etsin. Dilediğin zaman değiştirebilirsin.
-          </p>
+          <h2 className="font-extrabold text-[#1a1a2e] text-4xl md:text-5xl">{t.characters.title}</h2>
+          <p className="text-slate-500 text-lg font-medium mt-5 max-w-2xl mx-auto">{t.characters.subtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {groups.map((group) => {
             if (group.type === 'single') {
               const m = group.mascot
+              const lm = localized(m)
               return (
                 <motion.div
                   key={m.id}
@@ -569,7 +481,7 @@ const Characters = ({ onSelect }: { onSelect: (m: Mascot) => void }) => {
                 >
                   <Image
                     src={m.imageUrl}
-                    alt={m.name}
+                    alt={lm.name}
                     fill
                     sizes="(min-width:1024px) 22vw, (min-width:640px) 45vw, 90vw"
                     className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
@@ -577,11 +489,11 @@ const Characters = ({ onSelect }: { onSelect: (m: Mascot) => void }) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-5">
                     <div className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-2 bg-white/20 backdrop-blur-sm text-white border border-white/30">
-                      {m.trait}
+                      {lm.trait}
                     </div>
-                    <h3 className="font-extrabold text-2xl text-white drop-shadow">{m.name}</h3>
+                    <h3 className="font-extrabold text-2xl text-white drop-shadow">{lm.name}</h3>
                     <p className="text-white/70 font-bold text-xs mt-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      Tanı <ArrowRight size={12} />
+                      {t.characters.meet} <ArrowRight size={12} />
                     </p>
                   </div>
                 </motion.div>
@@ -605,31 +517,34 @@ const Characters = ({ onSelect }: { onSelect: (m: Mascot) => void }) => {
                 </div>
 
                 <div className="grid grid-cols-2 h-full">
-                  {[mascot1, mascot2].map((m, idx) => (
-                    <div
-                      key={m.id}
-                      onClick={() => onSelect(m)}
-                      className={`relative group cursor-pointer overflow-hidden ${idx === 0 ? 'border-r border-white/20' : ''}`}
-                    >
-                      <Image
-                        src={m.imageUrl}
-                        alt={m.name}
-                        fill
-                        sizes="(min-width:1024px) 22vw, 45vw"
-                        className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <div className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide mb-1.5 bg-white/20 backdrop-blur-sm text-white border border-white/30">
-                          {m.trait}
+                  {[mascot1, mascot2].map((m, idx) => {
+                    const lm = localized(m)
+                    return (
+                      <div
+                        key={m.id}
+                        onClick={() => onSelect(m)}
+                        className={`relative group cursor-pointer overflow-hidden ${idx === 0 ? 'border-r border-white/20' : ''}`}
+                      >
+                        <Image
+                          src={m.imageUrl}
+                          alt={lm.name}
+                          fill
+                          sizes="(min-width:1024px) 22vw, 45vw"
+                          className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <div className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide mb-1.5 bg-white/20 backdrop-blur-sm text-white border border-white/30">
+                            {lm.trait}
+                          </div>
+                          <h3 className="font-extrabold text-xl text-white drop-shadow">{lm.name}</h3>
+                          <p className="text-white/70 font-bold text-xs mt-1.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            {t.characters.meet} <ArrowRight size={11} />
+                          </p>
                         </div>
-                        <h3 className="font-extrabold text-xl text-white drop-shadow">{m.name}</h3>
-                        <p className="text-white/70 font-bold text-xs mt-1.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          Tanı <ArrowRight size={11} />
-                        </p>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </motion.div>
             )
@@ -641,42 +556,26 @@ const Characters = ({ onSelect }: { onSelect: (m: Mascot) => void }) => {
   )
 }
 
-/* ── Parents (trust + safety) ── */
+/* ── Parents ── */
 const Parents = () => {
-  const points = [
-    {
-      icon: <ShieldIcon size={28} className="text-emerald-600" />,
-      title: 'KVKK / COPPA / GDPR Uyumlu',
-      desc: 'Çocuk verilerini koruma standartlarının tümüne uyuyoruz. Veri silme ve dışa aktarma her an kullanıcının kontrolünde.',
-    },
-    {
-      icon: <LockIcon size={28} className="text-blue-600" />,
-      title: 'Reklamsız ve Takipsiz',
-      desc: 'Üçüncü taraf reklam ağı yok. Davranış izleme yok. Pazarlama amaçlı veri paylaşımı yok.',
-    },
-    {
-      icon: <HeartIcon size={28} className="text-rose-500" />,
-      title: 'Pedagojik Yaklaşım',
-      desc: 'Yaş gruplarına göre seviyelendirilmiş içerik. Korku temaları opt-in. Şiddet, küfür ve uygunsuz içerik filtrelenir.',
-    },
-    {
-      icon: <Sparkles size={28} className="text-purple-600" />,
-      title: 'Aile Paneli',
-      desc: 'Çocuğun gelişimini takip et, bildirim tercihlerini yönet, premium aboneliği App Store / Google Play\'den kontrol et.',
-    },
+  const { t } = useLang()
+  const icons = [
+    <ShieldIcon key="s" size={28} className="text-emerald-600" />,
+    <LockIcon key="l" size={28} className="text-blue-600" />,
+    <HeartIcon key="h" size={28} className="text-rose-500" />,
+    <Sparkles key="sp" size={28} className="text-purple-600" />,
   ]
+  const points = t.parents.points.map((p, i) => ({ ...p, icon: icons[i] }))
 
   return (
     <section id="ebeveyn" className="bg-gradient-to-b from-[#F0FDF4] to-white py-32 relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
           <div className="inline-flex bg-emerald-100 text-emerald-700 border-2 border-emerald-300 font-bold px-4 py-2 rounded-full mb-5">
-            🛡️ Ebeveynler İçin
+            {t.parents.badge}
           </div>
-          <h2 className="font-extrabold text-[#1a1a2e] text-4xl md:text-5xl mb-4">Güvenle Ellerinizdeyiz</h2>
-          <p className="text-slate-500 text-lg font-medium max-w-2xl mx-auto">
-            Çocuk uygulaması demek, ebeveyn güvenidir. Şeffaf veri politikası, açık fiyatlandırma ve tam kontrol.
-          </p>
+          <h2 className="font-extrabold text-[#1a1a2e] text-4xl md:text-5xl mb-4">{t.parents.title}</h2>
+          <p className="text-slate-500 text-lg font-medium max-w-2xl mx-auto">{t.parents.subtitle}</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -699,7 +598,7 @@ const Parents = () => {
         </div>
 
         <div className="mt-12 text-center">
-          <p className="text-sm text-slate-500 font-medium mb-4">Veri haklarını kullanmak veya soru sormak için:</p>
+          <p className="text-sm text-slate-500 font-medium mb-4">{t.parents.contactNote}</p>
           <a
             href="mailto:info@taletussle.com"
             className="inline-flex items-center gap-2 bg-white border-2 border-slate-200 hover:border-emerald-300 text-[#1a1a2e] font-bold py-3 px-6 rounded-full transition-all"
@@ -715,59 +614,26 @@ const Parents = () => {
 
 /* ── FAQ ── */
 const FAQ = () => {
-  const items = [
-    {
-      q: 'Hangi yaş grubu için uygun?',
-      a: 'TaleTussle 3-12 yaş arası çocuklar için tasarlandı. Yaş seçimine göre kelime hazinesi, cümle uzunluğu ve tema karmaşıklığı otomatik ayarlanır. Korku temaları (karanlık, gürültü, canavar vb.) opt-in — varsayılan olarak kapalı.',
-    },
-    {
-      q: 'Çocuğum okumayı bilmiyor, kullanabilir mi?',
-      a: 'Evet, tüm masallar profesyonel sesli okuma ile gelir. Çocuk dinleyerek takip eder, sayfa sayfa illüstrasyonlarla görsel deneyim yaşar. Okumayı yeni öğrenenler için ideal.',
-    },
-    {
-      q: 'Ücretli mi, ne kadar?',
-      a: 'TaleTussle ücretsiz olarak indirilir ve temel özellikler sınırlı kullanım ile açıktır. Premium üyelik (sınırsız masal, tüm karakterler, özel kostümler) Apple App Store ve Google Play üzerinden satın alınır. Fiyatlandırma uygulama içinde gösterilir; istediğin zaman iptal edebilirsin.',
-    },
-    {
-      q: 'Hangi cihazlarda çalışır?',
-      a: 'iOS 14+ ve Android 8+ destekleniyor. Tablet ve telefonda eşit deneyim sunulur. İnternet bağlantısı gerekir (yapay zekâ üretimi için).',
-    },
-    {
-      q: 'Reklam gösterilir mi? Çocuğumun verisi satılır mı?',
-      a: 'Hayır. Üçüncü taraf reklam ağları yok, davranış izleme yok, pazarlama amacıyla veri paylaşımı yok. KVKK / COPPA / GDPR uyumlu çalışırız. Detaylı bilgi: Gizlilik Politikası sayfamız.',
-    },
-    {
-      q: 'Veriler nerede saklanır?',
-      a: 'Sunucularımız Avrupa\'da. Çocuğun adı, yaşı ve ürettiği masallar şifrelenmiş bağlantı (HTTPS/TLS) üzerinden iletilir. Hesabını ve tüm verilerini istediğin an Ayarlar → Hesabımı Sil ile kalıcı olarak silebilirsin.',
-    },
-    {
-      q: 'Yapay zeka uygunsuz içerik üretir mi?',
-      a: 'Çoklu güvenlik filtresi kullanıyoruz: yaş grubu prompt\'a baştan dahil edilir, üretilen metin pedagojik kontrolden geçer, korkutucu/şiddet/uygun olmayan kelimeler bloklanır. Yine de uygunsuz bir şey görürsen geri bildirim ekranından bildir, hemen ele alırız.',
-    },
-    {
-      q: 'Aboneliği nasıl iptal ederim?',
-      a: 'Aboneliklerin Apple/Google hesabın üzerinden yönetilir: iOS\'ta Ayarlar → Apple ID → Abonelikler, Android\'de Google Play → Abonelikler. İptal sonrası mevcut dönem sonuna kadar Premium erişimin sürer.',
-    },
-  ]
+  const { t } = useLang()
   return (
     <section id="sss" className="bg-white py-32 relative">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-16">
           <div className="inline-flex bg-amber-100 text-amber-700 border-2 border-amber-300 font-bold px-4 py-2 rounded-full mb-5">
-            ❓ Sık Sorulan Sorular
+            {t.faq.badge}
           </div>
-          <h2 className="font-extrabold text-[#1a1a2e] text-4xl md:text-5xl mb-3">Merak Edilenler</h2>
+          <h2 className="font-extrabold text-[#1a1a2e] text-4xl md:text-5xl mb-3">{t.faq.title}</h2>
           <p className="text-slate-500 text-lg font-medium">
-            Aklındaki başka bir soru varsa{' '}
+            {t.faq.lead1}{' '}
             <a href="mailto:info@taletussle.com" className="text-[#FF6B6B] underline">
               info@taletussle.com
-            </a>{' '}
-            yaz, en geç 30 gün içinde döneriz.
+            </a>
+            {t.faq.lead2}
           </p>
         </div>
 
         <div className="space-y-3">
-          {items.map((item, i) => (
+          {t.faq.items.map((item, i) => (
             <details
               key={i}
               className="group bg-[#FFFBF5] border-2 border-slate-100 rounded-2xl overflow-hidden hover:border-[#FF6B6B]/30 transition-colors"
@@ -790,97 +656,104 @@ const FAQ = () => {
 }
 
 /* ── Final CTA ── */
-const FinalCTA = () => (
-  <section className="py-24 relative overflow-hidden bg-gradient-to-br from-[#1a1a2e] via-indigo-900 to-purple-900">
-    <div className="absolute top-10 right-10 w-96 h-96 bg-purple-500/30 blur-[100px] rounded-full pointer-events-none" />
-    <div className="absolute bottom-10 left-10 w-96 h-96 bg-rose-500/20 blur-[100px] rounded-full pointer-events-none" />
+const FinalCTA = () => {
+  const { t } = useLang()
+  return (
+    <section className="py-24 relative overflow-hidden bg-gradient-to-br from-[#1a1a2e] via-indigo-900 to-purple-900">
+      <div className="absolute top-10 right-10 w-96 h-96 bg-purple-500/30 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-10 left-10 w-96 h-96 bg-rose-500/20 blur-[100px] rounded-full pointer-events-none" />
 
-    <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ type: 'spring' }}
-      >
-        <div className="text-6xl mb-6">🌙</div>
-        <h2 className="font-extrabold text-white text-4xl md:text-5xl mb-5">Yarın Akşam Yeni Bir Masal?</h2>
-        <p className="text-white/70 text-lg md:text-xl font-medium mb-10 max-w-xl mx-auto">
-          TaleTussle yayında olduğunda haberdar olmak için aşağıdaki düğmelerden mağaza sayfasına git, bildirim al.
-        </p>
-        <div className="flex justify-center mb-8">
-          <StoreBadges size="lg" />
-        </div>
-        <p className="text-white/40 text-sm font-medium">
-          Sorular için <a className="underline hover:text-white" href="mailto:info@taletussle.com">info@taletussle.com</a>
-        </p>
-      </motion.div>
-    </div>
-  </section>
-)
+      <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ type: 'spring' }}
+        >
+          <div className="text-6xl mb-6">🌙</div>
+          <h2 className="font-extrabold text-white text-4xl md:text-5xl mb-5">{t.finalCta.title}</h2>
+          <p className="text-white/70 text-lg md:text-xl font-medium mb-10 max-w-xl mx-auto">{t.finalCta.desc}</p>
+          <div className="flex justify-center mb-8">
+            <StoreBadges size="lg" />
+          </div>
+          <p className="text-white/40 text-sm font-medium">
+            {t.finalCta.questions} <a className="underline hover:text-white" href="mailto:info@taletussle.com">info@taletussle.com</a>
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
 
 /* ── Footer ── */
-const Footer = () => (
-  <footer className="bg-[#0f0f1c] text-white py-14">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
-        <div className="max-w-sm">
-          <div className="flex items-center gap-3 mb-5">
-            <Image src="/logo.svg" alt="TaleTussle Logo" width={44} height={44} className="object-contain" />
-            <span className="text-2xl font-bold tracking-tight">TaleTussle</span>
+const Footer = () => {
+  const { t } = useLang()
+  const exploreLinks: [string, string][] = [
+    [t.footer.links.features, '#ozellikler'],
+    [t.footer.links.characters, '#karakterler'],
+    [t.footer.links.parents, '#ebeveyn'],
+    [t.footer.links.faq, '#sss'],
+  ]
+  const legalLinks: [string, string][] = [
+    [t.footer.links.privacy, '/privacy'],
+    [t.footer.links.terms, '/terms'],
+  ]
+  return (
+    <footer className="bg-[#0f0f1c] text-white py-14">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
+          <div className="max-w-sm">
+            <div className="flex items-center gap-3 mb-5">
+              <Image src="/logo.svg" alt="TaleTussle Logo" width={44} height={44} className="object-contain" />
+              <span className="text-2xl font-bold tracking-tight">TaleTussle</span>
+            </div>
+            <p className="text-white/50 font-medium leading-relaxed">{t.footer.tagline}</p>
+            <div className="mt-5">
+              <LanguageToggle variant="dark" />
+            </div>
           </div>
-          <p className="text-white/50 font-medium leading-relaxed">
-            Çocukların adıyla başlayan, yapay zekâ ile özelleştirilmiş sesli ve görsel masallar.
-          </p>
+          <div className="flex flex-wrap gap-12">
+            <div>
+              <p className="text-white/30 font-bold text-xs uppercase tracking-widest mb-5">{t.footer.explore}</p>
+              {exploreLinks.map(([label, href]) => (
+                <Link key={href} href={href} className="block text-white/60 hover:text-white font-medium mb-3 transition-colors">
+                  {label}
+                </Link>
+              ))}
+            </div>
+            <div>
+              <p className="text-white/30 font-bold text-xs uppercase tracking-widest mb-5">{t.footer.legal}</p>
+              {legalLinks.map(([label, href]) => (
+                <Link key={href} href={href} className="block text-white/60 hover:text-white font-medium mb-3 transition-colors">
+                  {label}
+                </Link>
+              ))}
+            </div>
+            <div>
+              <p className="text-white/30 font-bold text-xs uppercase tracking-widest mb-5">{t.footer.contact}</p>
+              <a href="mailto:info@taletussle.com" className="block text-white/60 hover:text-white font-medium mb-3 transition-colors">
+                info@taletussle.com
+              </a>
+              <a
+                href="https://instagram.com/taletussle"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-white/60 hover:text-white font-medium mb-3 transition-colors"
+              >
+                <InstagramIcon size={16} />
+                @taletussle
+              </a>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-12">
-          <div>
-            <p className="text-white/30 font-bold text-xs uppercase tracking-widest mb-5">Keşfet</p>
-            {[
-              ['Özellikler', '#ozellikler'],
-              ['Karakterler', '#karakterler'],
-              ['Ebeveynler', '#ebeveyn'],
-              ['SSS', '#sss'],
-            ].map(([label, href]) => (
-              <Link key={href} href={href} className="block text-white/60 hover:text-white font-medium mb-3 transition-colors">
-                {label}
-              </Link>
-            ))}
-          </div>
-          <div>
-            <p className="text-white/30 font-bold text-xs uppercase tracking-widest mb-5">Yasal</p>
-            {[
-              ['Gizlilik Politikası', '/privacy'],
-              ['Kullanım Koşulları', '/terms'],
-            ].map(([label, href]) => (
-              <Link key={href} href={href} className="block text-white/60 hover:text-white font-medium mb-3 transition-colors">
-                {label}
-              </Link>
-            ))}
-          </div>
-          <div>
-            <p className="text-white/30 font-bold text-xs uppercase tracking-widest mb-5">İletişim</p>
-            <a href="mailto:info@taletussle.com" className="block text-white/60 hover:text-white font-medium mb-3 transition-colors">
-              info@taletussle.com
-            </a>
-            <a
-              href="https://instagram.com/taletussle"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-white/60 hover:text-white font-medium mb-3 transition-colors"
-            >
-              <InstagramIcon size={16} />
-              @taletussle
-            </a>
-          </div>
+        <div className="border-t border-white/10 pt-7 flex flex-col md:flex-row justify-between items-center gap-3 text-center md:text-left">
+          <p className="text-white/30 font-medium text-sm">{t.footer.rights}</p>
+          <p className="text-white/30 font-medium text-sm">{t.footer.madeIn}</p>
         </div>
       </div>
-      <div className="border-t border-white/10 pt-7 flex flex-col md:flex-row justify-between items-center gap-3 text-center md:text-left">
-        <p className="text-white/30 font-medium text-sm">© 2026 TaleTussle. Tüm hakları saklıdır.</p>
-        <p className="text-white/30 font-medium text-sm">Türkiye&apos;den ❤ ile yapıldı</p>
-      </div>
-    </div>
-  </footer>
-)
+    </footer>
+  )
+}
 
 /* ── PAGE ── */
 export default function Page() {
@@ -904,4 +777,3 @@ export default function Page() {
     </div>
   )
 }
-// deploy-bust: 1777913826
