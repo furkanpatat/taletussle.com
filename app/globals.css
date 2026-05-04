@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-fredoka: var(--font-fredoka);
+  --font-baloo: var(--font-baloo);
   --font-nunito: var(--font-nunito);
 }
 
@@ -17,7 +17,7 @@
     -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4, h5 {
-    font-family: var(--font-fredoka), cursive;
+    font-family: var(--font-baloo), system-ui, sans-serif;
   }
   ::selection { background: #FFD93D; color: #1a1a2e; }
   button { cursor: pointer; }
@@ -96,7 +96,7 @@
   gap: 10px;
   padding: 18px 44px;
   border-radius: 99px;
-  font-family: var(--font-fredoka), cursive;
+  font-family: var(--font-baloo), system-ui, sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: #fff;
@@ -121,7 +121,7 @@
   gap: 8px;
   padding: 16px 36px;
   border-radius: 99px;
-  font-family: var(--font-fredoka), cursive;
+  font-family: var(--font-baloo), system-ui, sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: #FF6B6B;
@@ -188,7 +188,7 @@
   gap: 8px;
   padding: 8px 24px;
   border-radius: 99px;
-  font-family: var(--font-fredoka), cursive;
+  font-family: var(--font-baloo), system-ui, sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -212,7 +212,7 @@
    STATS
    ══════════════════════════════════════ */
 .stat-num {
-  font-family: var(--font-fredoka), cursive;
+  font-family: var(--font-baloo), system-ui, sans-serif;
   font-size: 4rem;
   font-weight: 700;
   line-height: 1;

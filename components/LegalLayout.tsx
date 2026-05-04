@@ -1,6 +1,7 @@
 'use client'
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft } from 'lucide-react'
 
 /**
@@ -28,7 +29,7 @@ export default function LegalLayout({
         <div className="max-w-3xl mx-auto px-5 md:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
             <ArrowLeft size={18} className="text-slate-500 group-hover:-translate-x-0.5 transition-transform" />
-            <img src="/logo.svg" alt="TaleTussle" className="w-8 h-8 object-contain" />
+            <Image src="/logo.svg" alt="TaleTussle" width={32} height={32} className="object-contain" />
             <span className="font-extrabold text-[#1a1a2e]">TaleTussle</span>
           </Link>
           <nav className="hidden sm:flex gap-5 text-sm font-bold text-slate-600">
