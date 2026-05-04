@@ -448,12 +448,25 @@ const STORAGE_KEY = 'tt_lang'
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>('tr')
 
-  // Mount sonrası kullanıcı tercihini geri yükle.
+  // Mount sonrası dil tercihini belirle.
+  // Öncelik: ?lang=xx query param > localStorage > default 'tr'
+  // ?lang=xx geldiğinde ayrıca localStorage'a yazılır (reviewer linki kalıcı olsun).
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     try {
+      const url = new URL(window.location.href)
+      const q = url.searchParams.get('lang')?.toLowerCase()
+      if (q === 'tr' || q === 'en') {
+        setLangState(q)
+        localStorage.setItem(STORAGE_KEY, q)
+        document.documentElement.lang = q
+        return
+      }
       const saved = localStorage.getItem(STORAGE_KEY) as Lang | null
-      if (saved === 'tr' || saved === 'en') setLangState(saved)
+      if (saved === 'tr' || saved === 'en') {
+        setLangState(saved)
+        document.documentElement.lang = saved
+      }
     } catch {}
   }, [])
 
