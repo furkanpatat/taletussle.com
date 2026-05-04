@@ -12,19 +12,22 @@ import LanguageToggle from './LanguageToggle'
  * için "external linkable" Privacy/Terms şartını karşılar.
  */
 export type LegalSection = { heading: string; body: string }
-
-export default function LegalLayout({
-  title,
-  updated,
-  intro,
-  sections,
-}: {
+export type LegalContent = {
   title: string
   updated: string
   intro?: string
   sections: LegalSection[]
+}
+
+export default function LegalLayout({
+  tr,
+  en,
+}: {
+  tr: LegalContent
+  en: LegalContent
 }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
+  const { title, updated, intro, sections } = lang === 'en' ? en : tr
   return (
     <div className="min-h-screen bg-[#FFFBF5] text-[#1a1a2e] font-sans">
       {/* Top bar */}
