@@ -98,6 +98,9 @@ const Wave = ({ fill = '#ffffff', flip = false }: { fill?: string; flip?: boolea
 )
 
 /* ── App Store / Google Play badges ── */
+// iOS canlı (App Store yayında), Android hâlâ Closed Test'te → iki ayrı state.
+const APP_STORE_URL = 'https://apps.apple.com/tr/app/taletussle/id6764353120'
+
 const StoreBadges = ({ size = 'md' }: { size?: 'md' | 'lg' }) => {
   const { t } = useLang()
   const ICON = size === 'lg' ? 'h-14 md:h-16' : 'h-12'
@@ -106,23 +109,25 @@ const StoreBadges = ({ size = 'md' }: { size?: 'md' | 'lg' }) => {
   return (
     <div className="flex flex-col sm:flex-row gap-3 items-center">
       <a
-        href="#yakinda"
-        aria-label={t.store.appStoreAria}
+        href={APP_STORE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t.store.iosAria}
         className={`group inline-flex items-center gap-3 bg-black text-white rounded-2xl ${PAD} shadow-lg hover:bg-zinc-800 transition-colors`}
       >
         <svg className={ICON} viewBox="0 0 384 512" fill="currentColor" aria-hidden="true">
           <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zM256.3 99.5c30.1-35.8 27.4-68.4 26.5-80.1-26.6 1.5-57.4 18.1-74.9 38.5-19.3 21.9-30.6 49-28.2 79.5 28.8 2.2 55.1-12.6 76.6-37.9z"/>
         </svg>
         <div className="text-left leading-tight">
-          <div className="text-[10px] font-medium opacity-70">{t.store.comingSoon}</div>
-          <div className="text-base font-bold">App Store</div>
+          <div className="text-[10px] font-medium opacity-70">{t.store.iosTopLabel}</div>
+          <div className="text-base font-bold">{t.store.iosBottomLabel}</div>
         </div>
       </a>
 
       <a
         href="#yakinda"
-        aria-label={t.store.googlePlayAria}
-        className={`group inline-flex items-center gap-3 bg-black text-white rounded-2xl ${PAD} shadow-lg hover:bg-zinc-800 transition-colors`}
+        aria-label={t.store.androidAria}
+        className={`group inline-flex items-center gap-3 bg-black text-white rounded-2xl ${PAD} shadow-lg hover:bg-zinc-800 transition-colors opacity-80`}
       >
         <svg className={ICON} viewBox="0 0 512 512" aria-hidden="true">
           <path fill="#34A853" d="M77 467l244-211L77 45v422z"/>
@@ -131,8 +136,8 @@ const StoreBadges = ({ size = 'md' }: { size?: 'md' | 'lg' }) => {
           <path fill="#4285F4" d="M77 45l244 211-86 74L77 467V45z" opacity=".75"/>
         </svg>
         <div className="text-left leading-tight">
-          <div className="text-[10px] font-medium opacity-70">{t.store.comingSoon}</div>
-          <div className="text-base font-bold">Google Play</div>
+          <div className="text-[10px] font-medium opacity-70">{t.store.androidTopLabel}</div>
+          <div className="text-base font-bold">{t.store.androidBottomLabel}</div>
         </div>
       </a>
     </div>

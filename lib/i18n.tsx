@@ -26,8 +26,17 @@ const _dict = {
       download: 'İndir 🚀',
     },
     store: {
+      // iOS canlıda — App Store'da yayında
+      iosTopLabel: "İndir",
+      iosBottomLabel: 'App Store',
+      iosAria: "App Store'dan TaleTussle'ı indir",
+      // Android hâlâ Closed Test'te — yayına çıkana kadar "Yakında"
+      androidTopLabel: 'Yakında',
+      androidBottomLabel: 'Google Play',
+      androidAria: "Google Play'de yakında",
+      // Deprecated — eski kullanım için kalır
       comingSoon: 'Yakında',
-      appStoreAria: "App Store'da yakında",
+      appStoreAria: "App Store'dan TaleTussle'ı indir",
       googlePlayAria: "Google Play'de yakında",
     },
     hero: {
@@ -216,8 +225,17 @@ const _dict = {
       download: 'Download 🚀',
     },
     store: {
+      // iOS live — available on App Store
+      iosTopLabel: 'Download on the',
+      iosBottomLabel: 'App Store',
+      iosAria: 'Download TaleTussle on the App Store',
+      // Android still in Closed Test
+      androidTopLabel: 'Coming Soon',
+      androidBottomLabel: 'Google Play',
+      androidAria: 'Coming soon on Google Play',
+      // Deprecated
       comingSoon: 'Coming Soon',
-      appStoreAria: 'Coming soon on App Store',
+      appStoreAria: 'Download TaleTussle on the App Store',
       googlePlayAria: 'Coming soon on Google Play',
     },
     hero: {
