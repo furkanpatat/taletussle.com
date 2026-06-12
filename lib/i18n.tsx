@@ -30,10 +30,10 @@ const _dict = {
       iosTopLabel: "İndir",
       iosBottomLabel: 'App Store',
       iosAria: "App Store'dan TaleTussle'ı indir",
-      // Android hâlâ Closed Test'te — yayına çıkana kadar "Yakında"
-      androidTopLabel: 'Yakında',
+      // Android Google Play'de yayında
+      androidTopLabel: 'İndir',
       androidBottomLabel: 'Google Play',
-      androidAria: "Google Play'de yakında",
+      androidAria: "Google Play'den TaleTussle'ı indir",
       // Deprecated — eski kullanım için kalır
       comingSoon: 'Yakında',
       appStoreAria: "App Store'dan TaleTussle'ı indir",
@@ -233,10 +233,10 @@ const _dict = {
       iosTopLabel: 'Download on the',
       iosBottomLabel: 'App Store',
       iosAria: 'Download TaleTussle on the App Store',
-      // Android still in Closed Test
-      androidTopLabel: 'Coming Soon',
+      // Android live on Google Play
+      androidTopLabel: 'Get it on',
       androidBottomLabel: 'Google Play',
-      androidAria: 'Coming soon on Google Play',
+      androidAria: 'Get TaleTussle on Google Play',
       // Deprecated
       comingSoon: 'Coming Soon',
       appStoreAria: 'Download TaleTussle on the App Store',

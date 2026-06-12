@@ -98,8 +98,9 @@ const Wave = ({ fill = '#ffffff', flip = false }: { fill?: string; flip?: boolea
 )
 
 /* ── App Store / Google Play badges ── */
-// iOS canlı (App Store yayında), Android hâlâ Closed Test'te → iki ayrı state.
+// iOS ve Android ikisi de canlı (App Store + Google Play yayında).
 const APP_STORE_URL = 'https://apps.apple.com/tr/app/taletussle/id6764353120'
+const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.taletussle.app'
 
 const StoreBadges = ({ size = 'md' }: { size?: 'md' | 'lg' }) => {
   const { t } = useLang()
@@ -125,9 +126,11 @@ const StoreBadges = ({ size = 'md' }: { size?: 'md' | 'lg' }) => {
       </a>
 
       <a
-        href="#yakinda"
+        href={GOOGLE_PLAY_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         aria-label={t.store.androidAria}
-        className={`group inline-flex items-center gap-3 bg-black text-white rounded-2xl ${PAD} shadow-lg hover:bg-zinc-800 transition-colors opacity-80`}
+        className={`group inline-flex items-center gap-3 bg-black text-white rounded-2xl ${PAD} shadow-lg hover:bg-zinc-800 transition-colors`}
       >
         <svg className={ICON} viewBox="0 0 512 512" aria-hidden="true">
           <path fill="#34A853" d="M77 467l244-211L77 45v422z"/>
