@@ -73,6 +73,10 @@ const _dict = {
           desc: 'Çocuğun adı, yaşı ve favorileriyle özelleştirilmiş hikâyeler. Her masal sayfa sayfa illüstrasyonlu ve profesyonel sesli okuma ile.',
         },
         {
+          title: 'Şarkılarla Öğrenme',
+          desc: 'Sayılar, renkler, günlük alışkanlıklar ve okul temalı eğitici şarkı videoları. Çocuk söyleyerek, eğlenerek öğrenir.',
+        },
+        {
           title: 'Eğitici Mini Oyunlar',
           desc: 'Matematik, bilim, kelime, görsel hafıza, ritim ve bilmece — yaş grubuna göre seviyelendirilmiş, ödüllü oyun seçenekleri.',
         },
@@ -270,6 +274,10 @@ const _dict = {
         {
           title: 'AI-Powered Stories',
           desc: "Stories tailored to your child's name, age and favorites. Every tale is page-by-page illustrated with professional narration.",
+        },
+        {
+          title: 'Learn with Songs',
+          desc: 'Educational song videos themed around numbers, colors, daily habits and school. Kids learn by singing along and having fun.',
         },
         {
           title: 'Educational Mini Games',

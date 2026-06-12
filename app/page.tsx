@@ -394,6 +394,7 @@ const Features = () => {
   const { t } = useLang()
   const styles = [
     { emoji: '🪄', bg: 'bg-orange-100', text: 'text-orange-600' },
+    { emoji: '🎵', bg: 'bg-cyan-100', text: 'text-cyan-600' },
     { emoji: '🧠', bg: 'bg-blue-100', text: 'text-blue-600' },
     { emoji: '🎯', bg: 'bg-rose-100', text: 'text-rose-600' },
     { emoji: '✨', bg: 'bg-purple-100', text: 'text-purple-600' },
